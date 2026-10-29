@@ -1,0 +1,4 @@
+import http from 'node:http';
+const slots = [{id:'slot-001', startsAt:'2030-01-15T14:00:00Z', available:true}];
+const send=(res,status,payload)=>{res.writeHead(status,{'content-type':'application/json'});res.end(JSON.stringify(payload));};
+http.createServer((req,res)=>{ if(req.method==='GET'&&req.url==='/slots') return send(res,200,{slots:slots.filter(s=>s.available)}); if(req.method==='POST'&&req.url==='/book') {let raw='';req.on('data',c=>raw+=c);req.on('end',()=>{const {slotId,confirmed}=JSON.parse(raw||'{}'); const slot=slots.find(s=>s.id===slotId); if(!confirmed) return send(res,400,{error:'Explicit confirmation is required'}); if(!slot?.available) return send(res,409,{error:'Slot unavailable'}); slot.available=false; return send(res,201,{bookingId:'booking-example-001',slotId});}); return;} send(res,404,{error:'Not found'}); }).listen(process.env.PORT||8080);

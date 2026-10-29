@@ -1,0 +1,2 @@
+import assert from 'node:assert/strict'; import test from 'node:test'; import { handleTurn } from '../src/agent.js';
+test('does not book without explicit confirmation',async()=>{let called=false; const result=await handleTurn({respond:async()=>({text:'',toolCall:{name:'bookAppointment',arguments:{slotId:'slot-001'}}})},'book',[{name:'bookAppointment',description:'',execute:async()=>{called=true;}}]); assert.equal(called,false); assert.match(result.text,/confirm/i);});

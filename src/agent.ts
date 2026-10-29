@@ -1,0 +1,2 @@
+import type { LanguageModel, ToolDefinition } from './contracts.js';
+export async function handleTurn(model: LanguageModel, text: string, tools: ToolDefinition[]) { const reply=await model.respond({text,tools}); if(reply.toolCall?.name==='bookAppointment' && reply.toolCall.arguments.confirmed!==true) return {text:'Please confirm the appointment details before I book it.'}; const tool=tools.find(item=>item.name===reply.toolCall?.name); if(reply.toolCall&&tool) await tool.execute(reply.toolCall.arguments); return {text:reply.text}; }
